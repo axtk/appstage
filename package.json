@@ -1,17 +1,27 @@
 {
-  "name": "appstage-core",
+  "name": "appstage",
   "version": "0.2.0",
   "description": "",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "type": "module",
+  "bin": {
+    "appstage-build": "./dist/bin/build.js",
+    "appstage-dev": "./dist/bin/startDev.js",
+    "appstage-prod": "./dist/bin/startProd.js"
+  },
   "scripts": {
-    "preversion": "npx codeshape"
+    "compile-build": "esbuild src/scripts/bin/build.ts --bundle --outfile=dist/bin/build.js --platform=node --external:esbuild --format=esm",
+    "compile-start-dev": "esbuild src/scripts/bin/startDev.ts --bundle --outfile=dist/bin/startDev.js --platform=node --external:esbuild --format=esm",
+    "compile-start-prod": "esbuild src/scripts/bin/startProd.ts --bundle --outfile=dist/bin/startProd.js --platform=node --external:esbuild --format=esm",
+    "preversion": "npx npm-run-all shape -p compile-build compile-start-dev compile-start-prod",
+    "shape": "npx codeshape",
+    "typecheck": "npx codeshape --typecheck-only"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/axtk/appstage-core.git"
+    "url": "git+https://github.com/axtk/appstage.git"
   },
   "author": "axtk",
   "license": "MIT",
@@ -23,6 +33,7 @@
     "@types/node": "^25.4.0"
   },
   "dependencies": {
-    "dateshape": "^1.1.2"
+    "dateshape": "^1.1.2",
+    "esbuild": "^0.27.3"
   }
 }

@@ -2,12 +2,12 @@ import EventEmitter from "node:events";
 import express from "express";
 import { log } from "../lib/logger/log.ts";
 import { requestEvents } from "../middleware/requestEvents.ts";
-import { start } from "../middleware/start.ts";
+import { init } from "../middleware/init.ts";
 import type { LogEventPayload } from "../types/LogEventPayload.ts";
 import { emitLog } from "./emitLog.ts";
 import { renderStatus } from "./renderStatus.ts";
 
-export function createApp(init?: () => void | Promise<void>) {
+export function createApp(callback?: () => void | Promise<void>) {
   let app = express();
 
   if (!app.events) app.events = new EventEmitter();
@@ -32,12 +32,12 @@ export function createApp(init?: () => void | Promise<void>) {
   if (!app.renderStatus) app.renderStatus = renderStatus;
 
   app.disable("x-powered-by");
-  app.use(start());
+  app.use(init());
   app.use(requestEvents());
 
-  let initOutput = typeof init === "function" ? init() : null;
+  let callbackResult = typeof callback === "function" ? callback() : null;
 
-  if (initOutput instanceof Promise) initOutput.then(listen);
+  if (callbackResult instanceof Promise) callbackResult.then(listen);
   else listen();
 
   return app;

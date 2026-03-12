@@ -5,7 +5,7 @@ import { emitLog } from "../utils/emitLog.ts";
 /**
  * Initializes the request context on `req.ctx`.
  */
-export const start: Middleware = () => (req, res, next) => {
+export const init: Middleware = () => (req, res, next) => {
   req.ctx = {
     ...req.ctx,
     id: randomBytes(16).toString("hex"),
@@ -13,7 +13,7 @@ export const start: Middleware = () => (req, res, next) => {
     startTime: Date.now(),
   };
 
-  emitLog(req.app, "Started", {
+  emitLog(req.app, "Inited", {
     req,
     res,
   });
