@@ -7,15 +7,11 @@
   "types": "./dist/index.d.ts",
   "type": "module",
   "bin": {
-    "appstage-build": "./dist/bin/build.js",
-    "appstage-dev": "./dist/bin/startDev.js",
-    "appstage-prod": "./dist/bin/startProd.js"
+    "appstage": "./dist/bin.js"
   },
   "scripts": {
-    "compile-build": "esbuild src/scripts/bin/build.ts --bundle --outfile=dist/bin/build.js --platform=node --external:esbuild --format=esm",
-    "compile-start-dev": "esbuild src/scripts/bin/startDev.ts --bundle --outfile=dist/bin/startDev.js --platform=node --external:esbuild --format=esm",
-    "compile-start-prod": "esbuild src/scripts/bin/startProd.ts --bundle --outfile=dist/bin/startProd.js --platform=node --external:esbuild --format=esm",
-    "preversion": "npx npm-run-all shape -p compile-build compile-start-dev compile-start-prod",
+    "compile-bin": "esbuild src/scripts/bin.ts --bundle --outfile=dist/bin.js --platform=node --external:esbuild --format=esm",
+    "preversion": "npx npm-run-all shape compile-bin",
     "shape": "npx codeshape",
     "typecheck": "npx codeshape --typecheck-only"
   },

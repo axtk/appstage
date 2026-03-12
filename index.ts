@@ -11,7 +11,6 @@ export * from "./src/middleware/lang.ts";
 export * from "./src/middleware/requestEvents.ts";
 export * from "./src/scripts/build.ts";
 export * from "./src/scripts/cli.ts";
-export * from "./src/scripts/start.ts";
 export * from "./src/types/Controller.ts";
 export * from "./src/types/ErrorController.ts";
 export * from "./src/types/LogEventPayload.ts";
