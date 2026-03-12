@@ -1,5 +1,5 @@
 {
-  "name": "@t8/webapp-core",
+  "name": "appstage-core",
   "version": "0.1.14",
   "description": "",
   "main": "./dist/index.cjs",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/t8js/webapp-core.git"
+    "url": "git+https://github.com/axtk/appstage-core.git"
   },
   "author": "axtk",
   "license": "MIT",
