@@ -1,8 +1,8 @@
 import EventEmitter from "node:events";
 import express from "express";
 import { log } from "../lib/logger/log.ts";
-import { requestEvents } from "../middleware/requestEvents.ts";
 import { init } from "../middleware/init.ts";
+import { requestEvents } from "../middleware/requestEvents.ts";
 import type { LogEventPayload } from "../types/LogEventPayload.ts";
 import { emitLog } from "./emitLog.ts";
 import { renderStatus } from "./renderStatus.ts";
