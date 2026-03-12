@@ -13,7 +13,7 @@
     "compile-bin": "esbuild src/scripts/bin.ts --bundle --outfile=dist/bin.js --platform=node --external:esbuild --format=esm",
     "preversion": "npx npm-run-all shape compile-bin",
     "shape": "npx codeshape",
-    "typecheck": "npx codeshape --typecheck-only"
+    "typecheck": "npx codeshape typecheck"
   },
   "repository": {
     "type": "git",
