@@ -19,9 +19,9 @@ export async function populateEntries() {
   }
 
   await writeFile(
-    "src/server/entries.ts",
+    "src/server/autoentries.ts",
     `// Populated automatically during the build phase by picking
-// all server exports from 'src/entries/<entry_name>/server(/index)?.(js|ts)'
+// all server exports from "src/entries/<entry_name>/server(/index)?.(js|ts)"
 ${content}
 `,
   );
