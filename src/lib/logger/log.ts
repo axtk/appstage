@@ -1,4 +1,4 @@
-import { formatDate, formatDuration } from "@t8/date-format";
+import { formatDate, formatDuration } from "dateshape";
 import { ansiEscapeCodes } from "./ansiEscapeCodes.ts";
 import type { LogOptions } from "./LogOptions.ts";
 import { levelColors } from "./levelColors.ts";
