@@ -1,7 +1,7 @@
 import { writeFile } from "node:fs/promises";
+import type { BuildParams } from "../types/BuildParams.ts";
 import { getEntryPoints } from "./getEntryPoints.ts";
 import { toImportPath } from "./toImportPath.ts";
-import { BuildParams } from "../types/BuildParams.ts";
 
 export async function populateEntries({ entriesPath }: BuildParams) {
   if (entriesPath === null) return;
