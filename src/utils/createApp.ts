@@ -13,7 +13,7 @@ export function createApp(callback?: () => void | Promise<void>) {
   if (!app.events) app.events = new EventEmitter();
 
   let host = process.env.APP_HOST || "localhost";
-  let port = Number(process.env.APP_PORT) || 80;
+  let port = Number(process.env.APP_PORT) || 3000;
 
   let listen = () => {
     app.listen(port, host, () => {
