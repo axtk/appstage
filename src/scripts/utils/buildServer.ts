@@ -3,11 +3,10 @@ import { commonBuildOptions } from "../const/commonBuildOptions.ts";
 import type { BuildParams } from "../types/BuildParams.ts";
 import { populateEntries } from "./populateEntries.ts";
 
-export async function buildServer(
-  { targetDir, watch, watchServer }: BuildParams,
-  plugins?: Plugin[],
-) {
-  await populateEntries();
+export async function buildServer(params: BuildParams, plugins?: Plugin[]) {
+  let { targetDir, watch, watchServer } = params;
+
+  await populateEntries(params);
 
   let buildOptions: BuildOptions = {
     ...commonBuildOptions,

@@ -1,8 +1,11 @@
 import { writeFile } from "node:fs/promises";
 import { getEntryPoints } from "./getEntryPoints.ts";
 import { toImportPath } from "./toImportPath.ts";
+import { BuildParams } from "../types/BuildParams.ts";
 
-export async function populateEntries() {
+export async function populateEntries({ entriesPath }: BuildParams) {
+  if (entriesPath === null) return;
+
   let serverEntries = await getEntryPoints(["server", "server/index"]);
   let content = "";
 
@@ -19,7 +22,7 @@ export async function populateEntries() {
   }
 
   await writeFile(
-    "src/server/autoentries.ts",
+    entriesPath ?? "src/server/entries.ts",
     `// Populated automatically during the build phase by picking
 // all server exports from "src/entries/<entry_name>/server(/index)?.(js|ts)"
 ${content}

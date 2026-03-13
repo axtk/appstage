@@ -35,6 +35,8 @@ export async function cli(args: string[] = []) {
     start: args.includes("--start"),
   };
 
+  if (args.includes("--no-auto-entries")) params.entriesPath = null;
+
   if (args.includes("--clean-only")) {
     await clean(params);
     return;

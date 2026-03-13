@@ -19,7 +19,7 @@ async function run() {
   if (scriptName === "build") return await cli(args);
 
   let nodeEnv = nodeEnvMap[scriptName];
-  let host = args[0];
+  let host = args.shift();
 
   if (nodeEnv !== undefined) process.env.NODE_ENV = nodeEnv;
 
@@ -32,8 +32,8 @@ async function run() {
 
   await cli(
     nodeEnv === "development"
-      ? ["src/public", "--clean", "--start", "--watch"]
-      : ["src/public", "--clean", "--start", "--silent"],
+      ? ["src/public", "--clean", "--start", "--watch", ...args]
+      : ["src/public", "--clean", "--start", "--silent", ...args],
   );
 }
 
