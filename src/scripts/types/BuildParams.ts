@@ -1,6 +1,6 @@
 export type BuildParams = {
-  targetDir: string;
-  publicAssetsDir: string;
+  serverDir: string;
+  clientDir: string;
   silent?: boolean;
   watch?: boolean;
   watchClient?: boolean;

@@ -27,7 +27,7 @@ export async function build(params: BuildParams) {
     }
 
     if (params.start)
-      serverProcess = spawn("node", [`${params.targetDir}/server/index.js`], {
+      serverProcess = spawn("node", [`${params.serverDir}/server/index.js`], {
         stdio: "inherit",
       });
   }

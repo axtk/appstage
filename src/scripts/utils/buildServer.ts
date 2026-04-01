@@ -4,7 +4,7 @@ import type { BuildParams } from "../types/BuildParams.ts";
 import { populateEntries } from "./populateEntries.ts";
 
 export async function buildServer(params: BuildParams, plugins?: Plugin[]) {
-  let { targetDir, watch, watchServer } = params;
+  let { serverDir, watch, watchServer } = params;
 
   await populateEntries(params);
 
@@ -13,7 +13,7 @@ export async function buildServer(params: BuildParams, plugins?: Plugin[]) {
     entryPoints: ["src/server/index.ts"],
     bundle: true,
     splitting: true,
-    outdir: `${targetDir}/server`,
+    outdir: `${serverDir}/server`,
     platform: "node",
     format: "esm",
     packages: "external",

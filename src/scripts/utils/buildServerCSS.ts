@@ -4,7 +4,7 @@ import type { BuildParams } from "../types/BuildParams.ts";
 import { getEntryPoints } from "./getEntryPoints.ts";
 
 export async function buildServerCSS(
-  { targetDir, watch, watchServer }: BuildParams,
+  { serverDir, watch, watchServer }: BuildParams,
   plugins?: Plugin[],
 ) {
   let serverEntries = await getEntryPoints(["server", "server/index"]);
@@ -17,7 +17,7 @@ export async function buildServerCSS(
     })),
     bundle: true,
     splitting: false,
-    outdir: `${targetDir}/server-css`,
+    outdir: `${serverDir}/server-css`,
     platform: "node",
     format: "esm",
     packages: "external",

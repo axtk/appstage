@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { hasKey, isKey } from "args-json";
 import { cli } from "./cli.ts";
 
 const availableScriptNames = new Set(["build", "dev", "prod"]);
@@ -19,21 +20,24 @@ async function run() {
   if (scriptName === "build") return await cli(args);
 
   let nodeEnv = nodeEnvMap[scriptName];
-  let host = args.shift();
 
   if (nodeEnv !== undefined) process.env.NODE_ENV = nodeEnv;
 
-  if (host) {
-    let [hostname, port] = host.split(":");
+  if (args.length !== 0 && !isKey(args[0])) {
+    let [hostname, port] = args[0].split(":");
 
     if (hostname) process.env.APP_HOST = hostname;
     if (port) process.env.APP_PORT = port;
+
+    args.shift();
   }
+
+  if (!hasKey("--client-dir")) args.push("--client-dir", "src/public/-");
 
   await cli(
     nodeEnv === "development"
-      ? ["src/public", "--clean", "--start", "--watch", ...args]
-      : ["src/public", "--clean", "--start", "--silent", ...args],
+      ? ["--clean", "--start", "--watch", ...args]
+      : ["--clean", "--start", "--silent", ...args]
   );
 }
 

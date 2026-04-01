@@ -3,7 +3,7 @@ import type { Plugin } from "esbuild";
 import type { BuildParams } from "../types/BuildParams.ts";
 
 export function createPostbuildPlugins(
-  { targetDir, publicAssetsDir }: BuildParams,
+  { serverDir, clientDir }: BuildParams,
   onServerRebuild: () => void,
 ) {
   let serverPlugins: Plugin[] = [
@@ -29,7 +29,7 @@ export function createPostbuildPlugins(
       name: "postbuild-server-css",
       setup(build) {
         build.onEnd(async () => {
-          let dir = `${targetDir}/server-css`;
+          let dir = `${serverDir}/server-css`;
 
           try {
             let files = (await readdir(dir)).filter((name) =>
@@ -38,15 +38,15 @@ export function createPostbuildPlugins(
 
             if (files.length === 0) return;
 
-            await mkdir(`${publicAssetsDir}/-`, { recursive: true });
+            await mkdir(clientDir, { recursive: true });
 
             await Promise.all(
               files.map(async (name) => {
-                let dir = `${publicAssetsDir}/-/${name.slice(0, -4)}`;
+                let dir = `${clientDir}/${name.slice(0, -4)}`;
 
                 await mkdir(dir, { recursive: true });
                 await rename(
-                  `${targetDir}/server-css/${name}`,
+                  `${serverDir}/server-css/${name}`,
                   `${dir}/index.css`,
                 );
               }),

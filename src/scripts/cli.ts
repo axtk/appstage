@@ -1,14 +1,13 @@
 import { rm } from "node:fs/promises";
 import { build } from "./build.ts";
 import type { BuildParams } from "./types/BuildParams.ts";
+import { Args } from "args-json";
 
-const defaultTargetDir = "dist";
-
-async function clean({ targetDir, publicAssetsDir }: BuildParams) {
+async function clean({ serverDir, clientDir }: BuildParams) {
   let dirs = [
-    `${targetDir}/server`,
-    `${targetDir}/server-css`,
-    `${publicAssetsDir}/-`,
+    `${serverDir}/server`,
+    `${serverDir}/server-css`,
+    clientDir,
   ];
 
   return Promise.all(
@@ -16,33 +15,33 @@ async function clean({ targetDir, publicAssetsDir }: BuildParams) {
   );
 }
 
-export async function cli(args: string[] = []) {
-  let publicAssetsDir = args[0];
-  let targetDir = args[1];
+export async function cli(input: string[] = []) {
+  let args = new Args(input);
 
-  if (!publicAssetsDir || publicAssetsDir.startsWith("--"))
+  let clientDir = args.getValue("--client-dir");
+  let serverDir = args.getValue("--server-dir", "dist");
+
+  if (!clientDir)
     throw new Error("Public assets directory is undefined");
 
-  if (!targetDir || targetDir.startsWith("--")) targetDir = defaultTargetDir;
-
   let params: BuildParams = {
-    targetDir,
-    publicAssetsDir,
-    silent: args.includes("--silent"),
-    watch: args.includes("--watch"),
-    watchServer: args.includes("--watch-server"),
-    watchClient: args.includes("--watch-client"),
-    start: args.includes("--start"),
+    serverDir,
+    clientDir,
+    silent: args.hasKey("--silent"),
+    watch: args.hasKey("--watch"),
+    watchServer: args.hasKey("--watch-server"),
+    watchClient: args.hasKey("--watch-client"),
+    start: args.hasKey("--start"),
   };
 
-  if (args.includes("--no-auto-entries")) params.entriesPath = null;
+  if (args.hasKey("--no-auto-entries")) params.entriesPath = null;
 
-  if (args.includes("--clean-only")) {
+  if (args.hasKey("--clean-only")) {
     await clean(params);
     return;
   }
 
-  if (args.includes("--clean")) await clean(params);
+  if (args.hasKey("--clean")) await clean(params);
 
   await build(params);
 }

@@ -10,7 +10,7 @@ import { getEntryPoints } from "./getEntryPoints.ts";
  * rendering.
  */
 export async function buildClient(
-  { publicAssetsDir, watch, watchClient }: BuildParams,
+  { clientDir, watch, watchClient }: BuildParams,
   plugins?: Plugin[],
 ) {
   let clientEntries = await getEntryPoints(["ui/index"]);
@@ -21,7 +21,7 @@ export async function buildClient(
     bundle: true,
     splitting: true,
     format: "esm",
-    outdir: `${publicAssetsDir}/-`,
+    outdir: clientDir,
     outbase: "src/entries",
     minify: process.env.NODE_ENV !== "development",
     plugins,
