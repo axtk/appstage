@@ -37,7 +37,7 @@ async function run() {
   await cli(
     nodeEnv === "development"
       ? ["--clean", "--start", "--watch", ...args]
-      : ["--clean", "--start", "--silent", ...args]
+      : ["--clean", "--start", "--silent", ...args],
   );
 }
 

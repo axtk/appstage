@@ -1,14 +1,10 @@
 import { rm } from "node:fs/promises";
+import { Args } from "args-json";
 import { build } from "./build.ts";
 import type { BuildParams } from "./types/BuildParams.ts";
-import { Args } from "args-json";
 
 async function clean({ serverDir, clientDir }: BuildParams) {
-  let dirs = [
-    `${serverDir}/server`,
-    `${serverDir}/server-css`,
-    clientDir,
-  ];
+  let dirs = [`${serverDir}/server`, `${serverDir}/server-css`, clientDir];
 
   return Promise.all(
     dirs.map((dir) => rm(dir, { recursive: true, force: true })),
@@ -21,8 +17,7 @@ export async function cli(input: string[] = []) {
   let clientDir = args.getValue("--client-dir");
   let serverDir = args.getValue("--server-dir", "dist");
 
-  if (!clientDir)
-    throw new Error("Public assets directory is undefined");
+  if (!clientDir) throw new Error("Public assets directory is undefined");
 
   let params: BuildParams = {
     serverDir,
