@@ -1,4 +1,5 @@
 export * from "./src/controllers/dir.ts";
+export * from "./src/controllers/files.ts";
 export * from "./src/controllers/unhandledError.ts";
 export * from "./src/controllers/unhandledRoute.ts";
 export * from "./src/lib/lang/getEffectiveLocale.ts";
