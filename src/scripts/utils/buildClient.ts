@@ -4,16 +4,13 @@ import type { BuildParams } from "../types/BuildParams.ts";
 import { getEntryPoints } from "./getEntryPoints.ts";
 
 /**
- * Builds the client-side code from the 'src/entries/<entry_name>/ui'
- * directories. The directories should preferrably be called 'ui' rather
- * than client since their contents can also be used with the server-side
- * rendering.
+ * Builds the client-side code.
  */
 export async function buildClient(
   { clientDir, watch, watchClient }: BuildParams,
   plugins?: Plugin[],
 ) {
-  let clientEntries = await getEntryPoints(["ui/index"]);
+  let clientEntries = await getEntryPoints(["ui/index", "client/index", "index"]);
 
   let buildOptions: BuildOptions = {
     ...commonBuildOptions,
