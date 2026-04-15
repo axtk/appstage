@@ -3,12 +3,7 @@ import { commonBuildOptions } from "../const/commonBuildOptions.ts";
 import type { BuildParams } from "../types/BuildParams.ts";
 import { getEntryPoints } from "./getEntryPoints.ts";
 
-const entryClientPaths = [
-  "ui/index",
-  "client/index",
-  "index",
-  "src/index",
-];
+const entryClientPaths = ["ui/index", "client/index", "index", "src/index"];
 
 /**
  * Builds the client-side code.
