@@ -1,8 +1,8 @@
-import { Request } from "express";
-import { readFile, lstat } from "node:fs/promises";
+import { lstat, readFile } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
-import { TransformContent } from "../types/TransformContent.ts";
-import { Controller } from "../types/Controller.ts";
+import type { Request } from "express";
+import type { Controller } from "../types/Controller.ts";
+import type { TransformContent } from "../types/TransformContent.ts";
 import { emitLog } from "../utils/emitLog.ts";
 
 const maxLanguages = 3;
@@ -11,8 +11,7 @@ async function resolve(...parts: string[]) {
   let fullPath = join(...parts);
   try {
     if ((await lstat(fullPath)).isFile()) return fullPath;
-  }
-  catch {}
+  } catch {}
   return null;
 }
 
@@ -49,9 +48,7 @@ const defaultPath = (req: Request) => req.originalUrl.split("?")[0];
  * fashion after applying optional transforms.
  */
 export const files: Controller<string | FilesParams> = (params) => {
-  let p: FilesParams = typeof params === "string"
-    ? { base: params }
-    : params;
+  let p: FilesParams = typeof params === "string" ? { base: params } : params;
 
   let bases = Array.isArray(p.base) ? p.base : [p.base];
   let exts = p.extensions ?? defaultExtensions;
@@ -59,12 +56,13 @@ export const files: Controller<string | FilesParams> = (params) => {
   return async (req, res) => {
     let langs = getLanguageList(req.acceptsLanguages());
 
-    let path = typeof p.path === "string"
-      ? p.path
-      : (p.path ?? defaultPath)(req);
+    let path =
+      typeof p.path === "string" ? p.path : (p.path ?? defaultPath)(req);
 
     if (path.includes("../")) {
-      emitLog(req.app, "Invalid path (potential traversal attempt)", { data: { path } });
+      emitLog(req.app, "Invalid path (potential traversal attempt)", {
+        data: { path },
+      });
 
       res.status(400).send(
         await req.app.renderStatus?.(req, res, {
@@ -86,10 +84,9 @@ export const files: Controller<string | FilesParams> = (params) => {
       // /x.en /x.ru
       for (let i = 0; i < langs.length && filePath === null; i++)
         filePath = await resolve(base, `${path}.${langs[i]}`);
-      
+
       // /x
-      if (filePath === null)
-        filePath = await resolve(base, path);
+      if (filePath === null) filePath = await resolve(base, path);
 
       // /x.en.html /x.en.htm /x.ru.html /x.ru.htm
       for (let i = 0; i < langs.length && filePath === null; i++) {
@@ -104,7 +101,11 @@ export const files: Controller<string | FilesParams> = (params) => {
       // /x.en/index.html /x.en/index.htm /x.ru/index.html /x.ru/index.htm
       for (let i = 0; i < langs.length && filePath === null; i++) {
         for (let j = 0; j < exts.length && filePath === null; j++)
-          filePath = await resolve(base, `${path}.${langs[i]}`, `index.${exts[j]}`);
+          filePath = await resolve(
+            base,
+            `${path}.${langs[i]}`,
+            `index.${exts[j]}`,
+          );
       }
 
       // /x/index.en.html /x/index.en.htm /x/index.ru.html /x/index.ru.htm
