@@ -14,6 +14,7 @@ export async function buildClient(
     "ui/index",
     "client/index",
     "index",
+    "src/index",
   ]);
 
   let buildOptions: BuildOptions = {
