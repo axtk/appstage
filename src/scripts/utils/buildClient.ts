@@ -10,7 +10,11 @@ export async function buildClient(
   { clientDir, watch, watchClient }: BuildParams,
   plugins?: Plugin[],
 ) {
-  let clientEntries = await getEntryPoints(["ui/index", "client/index", "index"]);
+  let clientEntries = await getEntryPoints([
+    "ui/index",
+    "client/index",
+    "index",
+  ]);
 
   let buildOptions: BuildOptions = {
     ...commonBuildOptions,
