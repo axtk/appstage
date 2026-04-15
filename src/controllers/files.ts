@@ -16,7 +16,12 @@ async function resolve(...parts: string[]) {
 }
 
 // ["en-US", "ru"] > ["en-US", "en", "ru"]
-function getLanguageList(acceptedLanguages: string[]) {
+function getLanguageList(req: Request) {
+  let langParam = req.query.lang;
+
+  if (langParam) return [String(langParam)];
+
+  let acceptedLanguages = req.acceptsLanguages();
   let langs = new Set<string>();
 
   for (let i = 0; i < acceptedLanguages.length && i < maxLanguages; i++) {
@@ -37,11 +42,13 @@ export type FilesParams = {
   base: string | string[];
   path?: string | ((req: Request) => string);
   extensions?: string[];
+  languages?: (req: Request) => string[];
   transform?: TransformContent[];
 };
 
 const defaultExtensions = ["html", "htm"];
 const defaultPath = (req: Request) => req.originalUrl.split("?")[0];
+const defaultLanguages = getLanguageList;
 
 /**
  * Serves files from the specified directory path in a locale-aware
@@ -54,7 +61,7 @@ export const files: Controller<string | FilesParams> = (params) => {
   let exts = p.extensions ?? defaultExtensions;
 
   return async (req, res) => {
-    let langs = getLanguageList(req.acceptsLanguages());
+    let langs = (p.languages ?? defaultLanguages)(req);
 
     let path =
       typeof p.path === "string" ? p.path : (p.path ?? defaultPath)(req);
