@@ -3,11 +3,13 @@ import { commonBuildOptions } from "../const/commonBuildOptions.ts";
 import type { BuildParams } from "../types/BuildParams.ts";
 import { getEntryPoints } from "./getEntryPoints.ts";
 
+const entryServerPaths = ["server", "server/index"];
+
 export async function buildServerCSS(
   { serverDir, watch, watchServer }: BuildParams,
   plugins?: Plugin[],
 ) {
-  let serverEntries = await getEntryPoints(["server", "server/index"]);
+  let serverEntries = await getEntryPoints(entryServerPaths);
 
   let buildOptions: BuildOptions = {
     ...commonBuildOptions,

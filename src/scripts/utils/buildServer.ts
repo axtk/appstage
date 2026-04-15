@@ -3,6 +3,8 @@ import { commonBuildOptions } from "../const/commonBuildOptions.ts";
 import type { BuildParams } from "../types/BuildParams.ts";
 import { populateEntries } from "./populateEntries.ts";
 
+const appServerEntryPoints = ["src/server/index.ts"];
+
 export async function buildServer(params: BuildParams, plugins?: Plugin[]) {
   let { serverDir, watch, watchServer } = params;
 
@@ -10,7 +12,7 @@ export async function buildServer(params: BuildParams, plugins?: Plugin[]) {
 
   let buildOptions: BuildOptions = {
     ...commonBuildOptions,
-    entryPoints: ["src/server/index.ts"],
+    entryPoints: appServerEntryPoints,
     bundle: true,
     splitting: true,
     outdir: `${serverDir}/server`,

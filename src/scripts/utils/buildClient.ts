@@ -3,6 +3,13 @@ import { commonBuildOptions } from "../const/commonBuildOptions.ts";
 import type { BuildParams } from "../types/BuildParams.ts";
 import { getEntryPoints } from "./getEntryPoints.ts";
 
+const entryClientPaths = [
+  "ui/index",
+  "client/index",
+  "index",
+  "src/index",
+];
+
 /**
  * Builds the client-side code.
  */
@@ -10,12 +17,7 @@ export async function buildClient(
   { clientDir, watch, watchClient }: BuildParams,
   plugins?: Plugin[],
 ) {
-  let clientEntries = await getEntryPoints([
-    "ui/index",
-    "client/index",
-    "index",
-    "src/index",
-  ]);
+  let clientEntries = await getEntryPoints(entryClientPaths);
 
   let buildOptions: BuildOptions = {
     ...commonBuildOptions,
