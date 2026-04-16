@@ -1,4 +1,3 @@
-export * from "./src/controllers/dir.ts";
 export * from "./src/controllers/files.ts";
 export * from "./src/controllers/unhandledError.ts";
 export * from "./src/controllers/unhandledRoute.ts";
@@ -27,6 +26,5 @@ export * from "./src/utils/emitLog.ts";
 export * from "./src/utils/getStatusMessage.ts";
 export * from "./src/utils/injectNonce.ts";
 export * from "./src/utils/renderStatus.ts";
-export * from "./src/utils/resolveFilePath.ts";
 export * from "./src/utils/serializeState.ts";
 export * from "./src/utils/servePipeableStream.ts";
