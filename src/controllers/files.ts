@@ -81,10 +81,10 @@ export const files: Controller<string | FilesParams> = (params) => {
       return;
     }
 
-    // path: /x
-    // langs: en, ru
     let filePath: string | null = null;
 
+    // path: /x
+    // langs: en, ru
     for (let k = 0; k < bases.length && filePath === null; k++) {
       let base = bases[k];
 
@@ -145,14 +145,15 @@ export const files: Controller<string | FilesParams> = (params) => {
     }
 
     let content = (await readFile(filePath)).toString();
-    let name = basename(filePath);
+    let ext = extname(filePath);
+    let name = basename(filePath, ext);
 
     for (let transform of p.transform) {
-      let result = transform(req, res, { content, path, name });
+      let result = transform(req, res, { content, path: filePath, name });
 
       content = result instanceof Promise ? await result : result;
     }
 
-    res.type(extname(name).slice(1)).send(content);
+    res.type(ext.slice(1)).send(content);
   };
 };
