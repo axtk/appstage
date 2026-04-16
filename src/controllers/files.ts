@@ -72,7 +72,7 @@ export type FilesParams = {
 };
 
 const defaultExtensions = ["html", "htm"];
-const defaultPath = (req: Request) => req.originalUrl.split("?")[0];
+const defaultPath = (req: Request) => req.path;
 const defaultLanguages = getLanguageList;
 
 /**
