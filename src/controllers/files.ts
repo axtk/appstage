@@ -77,7 +77,7 @@ const defaultPath = (req: Request) => req.path;
 const defaultLanguages = getLanguageList;
 
 /**
- * Serves files from the specified directory path in a locale-aware
+ * Serves files from the specified directory path or paths in a locale-aware
  * fashion after applying optional transforms.
  */
 export const files: Controller<string | FilesParams> = (params) => {
@@ -88,8 +88,6 @@ export const files: Controller<string | FilesParams> = (params) => {
   let fallthrough = p.fallthrough ?? true;
 
   return async (req, res, next) => {
-    let langs = (p.languages ?? defaultLanguages)(req);
-
     let path =
       typeof p.path === "string" ? p.path : (p.path ?? defaultPath)(req);
 
@@ -127,10 +125,10 @@ export const files: Controller<string | FilesParams> = (params) => {
       return;
     }
 
+    let langs = (p.languages ?? defaultLanguages)(req);
     let filePath: string | null = null;
 
-    // path: /x
-    // langs: en, ru
+    // Example: path = /x, langs = [en, ru], exts = [html, htm]
     for (let k = 0; k < bases.length && filePath === null; k++) {
       let base = bases[k];
 
