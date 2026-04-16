@@ -1,5 +1,5 @@
 import { lstat, readFile } from "node:fs/promises";
-import { basename, extname, join } from "node:path";
+import { basename, extname, join, resolve as resolveAbsPath } from "node:path";
 import type { Request } from "express";
 import type { Controller } from "../types/Controller.ts";
 import type { TransformContent } from "../types/TransformContent.ts";
@@ -17,7 +17,7 @@ const maxLanguages = 3;
 async function resolve(...parts: string[]) {
   let fullPath = join(...parts);
   try {
-    if ((await lstat(fullPath)).isFile()) return fullPath;
+    if ((await lstat(fullPath)).isFile()) return resolveAbsPath(fullPath);
   } catch {}
   return null;
 }
