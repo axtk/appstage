@@ -5,6 +5,8 @@ import type { Controller } from "../types/Controller.ts";
 import type { TransformContent } from "../types/TransformContent.ts";
 import { emitLog } from "../utils/emitLog.ts";
 
+type StringMatcher = string | RegExp | (string | RegExp)[] | ((x: string) => boolean) | null;
+
 const maxLanguages = 3;
 
 async function resolve(...parts: string[]) {
@@ -38,9 +40,28 @@ function getLanguageList(req: Request) {
   return Array.from(langs);
 }
 
+function matches(x: string, matcher: StringMatcher | undefined) {
+  if (matcher === null || matcher === undefined) return true;
+
+  if (typeof matcher === "function") return matcher(x);
+
+  let patterns = Array.isArray(matcher) ? matcher : [matcher];
+
+  for (let pattern of patterns) {
+    if (pattern instanceof RegExp) {
+      if (pattern.test(x)) return true;
+    }
+    else if (pattern === x) return true;
+  }
+
+  return false;
+}
+
 export type FilesParams = {
   base: string | string[];
   path?: string | ((req: Request) => string);
+  /** Specifies which paths should be accepted. */
+  matches?: StringMatcher;
   extensions?: string[];
   languages?: (req: Request) => string[];
   transform?: TransformContent[];
@@ -65,6 +86,19 @@ export const files: Controller<string | FilesParams> = (params) => {
 
     let path =
       typeof p.path === "string" ? p.path : (p.path ?? defaultPath)(req);
+
+    if (!matches(path, p.matches)) {
+      emitLog(req.app, "Unmatched path", { data: { path } });
+
+      res.status(404).send(
+        await req.app.renderStatus?.(req, res, {
+          code: "unmatched_path",
+          path,
+        }),
+      );
+
+      return;
+    }
 
     if (path.includes("../")) {
       emitLog(req.app, "Invalid path (potential traversal attempt)", {
