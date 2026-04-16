@@ -9,7 +9,7 @@ const entryClientPaths = ["ui/index", "client/index", "index", "src/index"];
  * Builds the client-side code.
  */
 export async function buildClient(
-  { watch, watchClient }: BuildParams,
+  { clientDir, watch, watchClient }: BuildParams,
   plugins?: Plugin[],
 ) {
   let clientEntries = await getEntryPoints(entryClientPaths);
@@ -18,12 +18,12 @@ export async function buildClient(
     ...commonBuildOptions,
     entryPoints: clientEntries.map(({ path, name }) => ({
       in: path,
-      out: `${name}/dist/index`,
+      out: `${name}/index`,
     })),
     bundle: true,
     splitting: true,
     format: "esm",
-    outdir: "src/entries",
+    outdir: clientDir,
     minify: process.env.NODE_ENV !== "development",
     plugins,
   };
