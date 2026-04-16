@@ -1,14 +1,14 @@
 import esbuild, { type BuildOptions, type Plugin } from "esbuild";
 import { commonBuildOptions } from "../const/commonBuildOptions.ts";
 import type { BuildParams } from "../types/BuildParams.ts";
-import { populateEntries } from "./populateEntries.ts";
+import { setEntriesExport } from "./setEntriesExport.ts";
 
 const appServerEntryPoints = ["src/server/index.ts"];
 
 export async function buildServer(params: BuildParams, plugins?: Plugin[]) {
   let { serverDir, watch, watchServer } = params;
 
-  await populateEntries(params);
+  await setEntriesExport(params);
 
   let buildOptions: BuildOptions = {
     ...commonBuildOptions,
