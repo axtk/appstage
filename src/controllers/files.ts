@@ -5,7 +5,12 @@ import type { Controller } from "../types/Controller.ts";
 import type { TransformContent } from "../types/TransformContent.ts";
 import { emitLog } from "../utils/emitLog.ts";
 
-type StringMatcher = string | RegExp | (string | RegExp)[] | ((x: string) => boolean) | null;
+type StringMatcher =
+  | string
+  | RegExp
+  | (string | RegExp)[]
+  | ((x: string) => boolean)
+  | null;
 
 const maxLanguages = 3;
 
@@ -50,8 +55,7 @@ function matches(x: string, matcher: StringMatcher | undefined) {
   for (let pattern of patterns) {
     if (pattern instanceof RegExp) {
       if (pattern.test(x)) return true;
-    }
-    else if (pattern === x) return true;
+    } else if (pattern === x) return true;
   }
 
   return false;
