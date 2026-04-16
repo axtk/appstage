@@ -1,6 +1,6 @@
 {
   "name": "appstage",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
