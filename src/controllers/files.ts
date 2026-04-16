@@ -88,22 +88,24 @@ export const files: Controller<string | FilesParams> = (params) => {
     for (let k = 0; k < bases.length && filePath === null; k++) {
       let base = bases[k];
 
-      // /x.en /x.ru
-      for (let i = 0; i < langs.length && filePath === null; i++)
-        filePath = await resolve(base, `${path}.${langs[i]}`);
+      if (!path.endsWith("/")) {
+        // /x.en /x.ru
+        for (let i = 0; i < langs.length && filePath === null; i++)
+          filePath = await resolve(base, `${path}.${langs[i]}`);
 
-      // /x
-      if (filePath === null) filePath = await resolve(base, path);
+        // /x
+        if (filePath === null) filePath = await resolve(base, path);
 
-      // /x.en.html /x.en.htm /x.ru.html /x.ru.htm
-      for (let i = 0; i < langs.length && filePath === null; i++) {
-        for (let j = 0; j < exts.length && filePath === null; j++)
-          filePath = await resolve(base, `${path}.${langs[i]}.${exts[j]}`);
+        // /x.en.html /x.en.htm /x.ru.html /x.ru.htm
+        for (let i = 0; i < langs.length && filePath === null; i++) {
+          for (let j = 0; j < exts.length && filePath === null; j++)
+            filePath = await resolve(base, `${path}.${langs[i]}.${exts[j]}`);
+        }
+
+        // /x.html /x.htm
+        for (let i = 0; i < exts.length && filePath === null; i++)
+          filePath = await resolve(base, `${path}.${exts[i]}`);
       }
-
-      // /x.html /x.htm
-      for (let i = 0; i < exts.length && filePath === null; i++)
-        filePath = await resolve(base, `${path}.${exts[i]}`);
 
       // /x.en/index.html /x.en/index.htm /x.ru/index.html /x.ru/index.htm
       for (let i = 0; i < langs.length && filePath === null; i++) {
