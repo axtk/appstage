@@ -69,6 +69,7 @@ export type FilesParams = {
   extensions?: string[];
   languages?: (req: Request) => string[];
   transform?: TransformContent[];
+  fallthrough?: boolean;
 };
 
 const defaultExtensions = ["html", "htm"];
@@ -84,37 +85,44 @@ export const files: Controller<string | FilesParams> = (params) => {
 
   let bases = Array.isArray(p.base) ? p.base : [p.base];
   let exts = p.extensions ?? defaultExtensions;
+  let fallthrough = p.fallthrough ?? true;
 
-  return async (req, res) => {
+  return async (req, res, next) => {
     let langs = (p.languages ?? defaultLanguages)(req);
 
     let path =
       typeof p.path === "string" ? p.path : (p.path ?? defaultPath)(req);
 
     if (!matches(path, p.matches)) {
-      emitLog(req.app, "Unmatched path", { data: { path } });
+      if (fallthrough) next();
+      else {
+        emitLog(req.app, "Unmatched path", { data: { path } });
 
-      res.status(404).send(
-        await req.app.renderStatus?.(req, res, {
-          code: "unmatched_path",
-          path,
-        }),
-      );
+        res.status(404).send(
+          await req.app.renderStatus?.(req, res, {
+            code: "unmatched_path",
+            path,
+          }),
+        );
+      }
 
       return;
     }
 
     if (path.includes("../")) {
-      emitLog(req.app, "Invalid path (potential traversal attempt)", {
-        data: { path },
-      });
+      if (fallthrough) next();
+      else {
+        emitLog(req.app, "Invalid path (potential traversal attempt)", {
+          data: { path },
+        });
 
-      res.status(400).send(
-        await req.app.renderStatus?.(req, res, {
-          code: "invalid_path",
-          path,
-        }),
-      );
+        res.status(400).send(
+          await req.app.renderStatus?.(req, res, {
+            code: "invalid_path",
+            path,
+          }),
+        );
+      }
 
       return;
     }
@@ -167,14 +175,17 @@ export const files: Controller<string | FilesParams> = (params) => {
     }
 
     if (filePath === null) {
-      emitLog(req.app, "Unknown path", { data: { path } });
+      if (fallthrough) next();
+      else {
+        emitLog(req.app, "Unknown path", { data: { path } });
 
-      res.status(404).send(
-        await req.app.renderStatus?.(req, res, {
-          code: "unknown_path",
-          path,
-        }),
-      );
+        res.status(404).send(
+          await req.app.renderStatus?.(req, res, {
+            code: "unknown_path",
+            path,
+          }),
+        );
+      }
 
       return;
     }
