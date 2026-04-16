@@ -18,11 +18,12 @@ export async function buildClient(
     ...commonBuildOptions,
     entryPoints: clientEntries.map(({ path, name }) => ({
       in: path,
-      out: `src/entries/${name}/dist/index`,
+      out: `${name}/dist/index`,
     })),
     bundle: true,
     splitting: true,
     format: "esm",
+    outdir: "src/entries",
     minify: process.env.NODE_ENV !== "development",
     plugins,
   };
