@@ -88,18 +88,18 @@ export const files: Controller<string | FilesParams> = (params) => {
   let fallthrough = p.fallthrough ?? true;
 
   return async (req, res, next) => {
-    let path =
+    let urlPath =
       typeof p.path === "string" ? p.path : (p.path ?? defaultPath)(req);
 
-    if (!matches(path, p.matches)) {
+    if (!matches(urlPath, p.matches)) {
       if (fallthrough) next();
       else {
-        emitLog(req.app, "Unmatched path", { data: { path } });
+        emitLog(req.app, "Unmatched path", { data: { urlPath } });
 
         res.status(404).send(
           await req.app.renderStatus?.(req, res, {
             code: "unmatched_path",
-            path,
+            urlPath,
           }),
         );
       }
@@ -107,17 +107,17 @@ export const files: Controller<string | FilesParams> = (params) => {
       return;
     }
 
-    if (path.includes("../")) {
+    if (urlPath.includes("../")) {
       if (fallthrough) next();
       else {
         emitLog(req.app, "Invalid path (potential traversal attempt)", {
-          data: { path },
+          data: { urlPath },
         });
 
         res.status(400).send(
           await req.app.renderStatus?.(req, res, {
             code: "invalid_path",
-            path,
+            urlPath,
           }),
         );
       }
@@ -127,37 +127,37 @@ export const files: Controller<string | FilesParams> = (params) => {
 
     let langs = (p.languages ?? defaultLanguages)(req);
     let filePath: string | null = null;
-    let ext = extname(path);
+    let urlExt = extname(urlPath);
 
     // Example: path = /x, langs = [en, ru], exts = [html, htm]
     for (let k = 0; k < bases.length && filePath === null; k++) {
       let base = bases[k];
 
-      if (!path.endsWith("/")) {
+      if (!urlPath.endsWith("/")) {
         // /x.en /x.ru
         for (let i = 0; i < langs.length && filePath === null; i++)
-          filePath = await resolve(base, `${path}.${langs[i]}`);
+          filePath = await resolve(base, `${urlPath}.${langs[i]}`);
 
-        if (filePath === null && ext) {
-          let pathBase = path.slice(0, -ext.length);
+        if (filePath === null && urlExt) {
+          let urlPathBase = urlPath.slice(0, -urlExt.length);
 
           // /x.en.ext /x.ru.ext
           for (let i = 0; i < langs.length && filePath === null; i++)
-            filePath = await resolve(base, `${pathBase}.${langs[i]}${ext}`);
+            filePath = await resolve(base, `${urlPathBase}.${langs[i]}${urlExt}`);
         }
 
         // /x
-        if (filePath === null) filePath = await resolve(base, path);
+        if (filePath === null) filePath = await resolve(base, urlPath);
 
         // /x.en.html /x.en.htm /x.ru.html /x.ru.htm
         for (let i = 0; i < langs.length && filePath === null; i++) {
           for (let j = 0; j < exts.length && filePath === null; j++)
-            filePath = await resolve(base, `${path}.${langs[i]}.${exts[j]}`);
+            filePath = await resolve(base, `${urlPath}.${langs[i]}.${exts[j]}`);
         }
 
         // /x.html /x.htm
         for (let i = 0; i < exts.length && filePath === null; i++)
-          filePath = await resolve(base, `${path}.${exts[i]}`);
+          filePath = await resolve(base, `${urlPath}.${exts[i]}`);
       }
 
       // /x.en/index.html /x.en/index.htm /x.ru/index.html /x.ru/index.htm
@@ -165,7 +165,7 @@ export const files: Controller<string | FilesParams> = (params) => {
         for (let j = 0; j < exts.length && filePath === null; j++)
           filePath = await resolve(
             base,
-            `${path}.${langs[i]}`,
+            `${urlPath}.${langs[i]}`,
             `index.${exts[j]}`,
           );
       }
@@ -173,23 +173,23 @@ export const files: Controller<string | FilesParams> = (params) => {
       // /x/index.en.html /x/index.en.htm /x/index.ru.html /x/index.ru.htm
       for (let i = 0; i < langs.length && filePath === null; i++) {
         for (let j = 0; j < exts.length && filePath === null; j++)
-          filePath = await resolve(base, path, `index.${langs[i]}.${exts[j]}`);
+          filePath = await resolve(base, urlPath, `index.${langs[i]}.${exts[j]}`);
       }
 
       // /x/index.html /x/index.htm
       for (let i = 0; i < exts.length && filePath === null; i++)
-        filePath = await resolve(base, path, `index.${exts[i]}`);
+        filePath = await resolve(base, urlPath, `index.${exts[i]}`);
     }
 
     if (filePath === null) {
       if (fallthrough) next();
       else {
-        emitLog(req.app, "Unknown path", { data: { path } });
+        emitLog(req.app, "Unknown path", { data: { urlPath } });
 
         res.status(404).send(
           await req.app.renderStatus?.(req, res, {
             code: "unknown_path",
-            path,
+            urlPath,
           }),
         );
       }
@@ -202,17 +202,17 @@ export const files: Controller<string | FilesParams> = (params) => {
       return;
     }
 
-    ext = extname(filePath);
 
     let content = (await readFile(filePath)).toString();
-    let name = basename(filePath, ext);
+    let fileExt = extname(filePath);
+    let fileName = basename(filePath, fileExt);
 
     for (let transform of p.transform) {
-      let result = transform(req, res, { content, path: filePath, name });
+      let result = transform(req, res, { content, path: filePath, name: fileName });
 
       content = result instanceof Promise ? await result : result;
     }
 
-    res.type(ext.slice(1)).send(content);
+    res.type(fileExt.slice(1)).send(content);
   };
 };
