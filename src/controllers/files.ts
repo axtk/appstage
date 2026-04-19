@@ -127,6 +127,7 @@ export const files: Controller<string | FilesParams> = (params) => {
 
     let langs = (p.languages ?? defaultLanguages)(req);
     let filePath: string | null = null;
+    let ext = extname(path);
 
     // Example: path = /x, langs = [en, ru], exts = [html, htm]
     for (let k = 0; k < bases.length && filePath === null; k++) {
@@ -136,6 +137,14 @@ export const files: Controller<string | FilesParams> = (params) => {
         // /x.en /x.ru
         for (let i = 0; i < langs.length && filePath === null; i++)
           filePath = await resolve(base, `${path}.${langs[i]}`);
+
+        if (filePath === null && ext) {
+          let pathBase = path.slice(0, -ext.length);
+
+          // /x.en.ext /x.ru.ext
+          for (let i = 0; i < langs.length && filePath === null; i++)
+            filePath = await resolve(base, `${pathBase}.${langs[i]}${ext}`);
+        }
 
         // /x
         if (filePath === null) filePath = await resolve(base, path);
@@ -193,8 +202,9 @@ export const files: Controller<string | FilesParams> = (params) => {
       return;
     }
 
+    ext = extname(filePath);
+
     let content = (await readFile(filePath)).toString();
-    let ext = extname(filePath);
     let name = basename(filePath, ext);
 
     for (let transform of p.transform) {
