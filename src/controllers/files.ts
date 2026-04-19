@@ -143,7 +143,10 @@ export const files: Controller<string | FilesParams> = (params) => {
 
           // /x.en.ext /x.ru.ext
           for (let i = 0; i < langs.length && filePath === null; i++)
-            filePath = await resolve(base, `${urlPathBase}.${langs[i]}${urlExt}`);
+            filePath = await resolve(
+              base,
+              `${urlPathBase}.${langs[i]}${urlExt}`,
+            );
         }
 
         // /x
@@ -173,7 +176,11 @@ export const files: Controller<string | FilesParams> = (params) => {
       // /x/index.en.html /x/index.en.htm /x/index.ru.html /x/index.ru.htm
       for (let i = 0; i < langs.length && filePath === null; i++) {
         for (let j = 0; j < exts.length && filePath === null; j++)
-          filePath = await resolve(base, urlPath, `index.${langs[i]}.${exts[j]}`);
+          filePath = await resolve(
+            base,
+            urlPath,
+            `index.${langs[i]}.${exts[j]}`,
+          );
       }
 
       // /x/index.html /x/index.htm
@@ -202,13 +209,16 @@ export const files: Controller<string | FilesParams> = (params) => {
       return;
     }
 
-
     let content = (await readFile(filePath)).toString();
     let fileExt = extname(filePath);
     let fileName = basename(filePath, fileExt);
 
     for (let transform of p.transform) {
-      let result = transform(req, res, { content, path: filePath, name: fileName });
+      let result = transform(req, res, {
+        content,
+        path: filePath,
+        name: fileName,
+      });
 
       content = result instanceof Promise ? await result : result;
     }
