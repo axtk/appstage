@@ -66,15 +66,23 @@ export type FilesParams = {
   path?: string | ((req: Request) => string);
   /** Specifies which paths should be accepted. */
   matches?: StringMatcher;
+  /**
+   * @default ["html", "htm"]
+   */
   extensions?: string[];
   languages?: (req: Request) => string[];
+  /**
+   * Assumed file language if unspecified in the file name.
+   *
+   * @default "en"
+   */
+  defaultLanguage?: string | ((req: Request) => string);
   transform?: TransformContent[];
   fallthrough?: boolean;
 };
 
 const defaultExtensions = ["html", "htm"];
 const defaultPath = (req: Request) => req.path;
-const defaultLanguages = getLanguageList;
 
 /**
  * Serves files from the specified directory path or paths in a locale-aware
@@ -90,6 +98,10 @@ export const files: Controller<string | FilesParams> = (params) => {
   return async (req, res, next) => {
     let urlPath =
       typeof p.path === "string" ? p.path : (p.path ?? defaultPath)(req);
+
+    let defaultLanguage = typeof p.defaultLanguage === "function"
+      ? p.defaultLanguage(req)
+      : p.defaultLanguage ?? "en";
 
     if (!matches(urlPath, p.matches)) {
       if (fallthrough) next();
@@ -125,67 +137,65 @@ export const files: Controller<string | FilesParams> = (params) => {
       return;
     }
 
-    let langs = (p.languages ?? defaultLanguages)(req);
     let filePath: string | null = null;
     let urlExt = extname(urlPath);
 
-    // Example: path = /x, langs = [en, ru], exts = [html, htm]
+    let langs = (p.languages ?? getLanguageList)(req);
+    let defaultLanguageIndex = langs.indexOf(defaultLanguage);
+
+    let suffixes = langs.map((s) => `.${s}`);
+
+    // Check the suffixless path right after the default language suffix.
+    if (defaultLanguageIndex === -1) suffixes.push("");
+    else suffixes.splice(defaultLanguageIndex + 1, 0, "");
+
+    // Example:
+    // path = /x, langs = [en, ru], default lang: en, exts = [html, htm]
     for (let k = 0; k < bases.length && filePath === null; k++) {
       let base = bases[k];
 
       if (!urlPath.endsWith("/")) {
-        // /x.en /x.ru
-        for (let i = 0; i < langs.length && filePath === null; i++)
-          filePath = await resolve(base, `${urlPath}.${langs[i]}`);
+        // /x.en /x /x.ru
+        for (let i = 0; i < suffixes.length && filePath === null; i++)
+          filePath = await resolve(base, `${urlPath}${suffixes[i]}`);
 
         if (filePath === null && urlExt) {
           let urlPathBase = urlPath.slice(0, -urlExt.length);
 
-          // /x.en.ext /x.ru.ext
-          for (let i = 0; i < langs.length && filePath === null; i++)
+          // /x.en.ext /x.ext /x.ru.ext
+          for (let i = 0; i < suffixes.length && filePath === null; i++)
             filePath = await resolve(
               base,
-              `${urlPathBase}.${langs[i]}${urlExt}`,
+              `${urlPathBase}${suffixes[i]}${urlExt}`,
             );
         }
 
-        // /x
-        if (filePath === null) filePath = await resolve(base, urlPath);
-
-        // /x.en.html /x.en.htm /x.ru.html /x.ru.htm
-        for (let i = 0; i < langs.length && filePath === null; i++) {
+        // /x.en.html /x.en.htm /x.html /x.htm /x.ru.html /x.ru.htm
+        for (let i = 0; i < suffixes.length && filePath === null; i++) {
           for (let j = 0; j < exts.length && filePath === null; j++)
-            filePath = await resolve(base, `${urlPath}.${langs[i]}.${exts[j]}`);
+            filePath = await resolve(base, `${urlPath}${suffixes[i]}.${exts[j]}`);
         }
-
-        // /x.html /x.htm
-        for (let i = 0; i < exts.length && filePath === null; i++)
-          filePath = await resolve(base, `${urlPath}.${exts[i]}`);
       }
 
-      // /x.en/index.html /x.en/index.htm /x.ru/index.html /x.ru/index.htm
-      for (let i = 0; i < langs.length && filePath === null; i++) {
+      // /x.en/index.html /x.en/index.htm /x/index.html /x/index.htm /x.ru/index.html /x.ru/index.htm
+      for (let i = 0; i < suffixes.length && filePath === null; i++) {
         for (let j = 0; j < exts.length && filePath === null; j++)
           filePath = await resolve(
             base,
-            `${urlPath}.${langs[i]}`,
+            `${urlPath}${suffixes[i]}`,
             `index.${exts[j]}`,
           );
       }
 
-      // /x/index.en.html /x/index.en.htm /x/index.ru.html /x/index.ru.htm
-      for (let i = 0; i < langs.length && filePath === null; i++) {
+      // /x/index.en.html /x/index.en.htm /x/index.html /x/index.htm /x/index.ru.html /x/index.ru.htm
+      for (let i = 0; i < suffixes.length && filePath === null; i++) {
         for (let j = 0; j < exts.length && filePath === null; j++)
           filePath = await resolve(
             base,
             urlPath,
-            `index.${langs[i]}.${exts[j]}`,
+            `index${suffixes[i]}.${exts[j]}`,
           );
       }
-
-      // /x/index.html /x/index.htm
-      for (let i = 0; i < exts.length && filePath === null; i++)
-        filePath = await resolve(base, urlPath, `index.${exts[i]}`);
     }
 
     if (filePath === null) {
