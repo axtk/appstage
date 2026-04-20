@@ -107,7 +107,11 @@ export const files: Controller<string | FilesParams> = (params) => {
     if (!matches(urlPath, p.matches)) {
       if (fallthrough) next();
       else {
-        emitLog(req.app, "Unmatched path", { data: { urlPath } });
+        emitLog(req.app, "Unmatched path", {
+          data: { urlPath },
+          req,
+          res,
+        });
 
         res.status(404).send(
           await req.app.renderStatus?.(req, res, {
@@ -125,6 +129,8 @@ export const files: Controller<string | FilesParams> = (params) => {
       else {
         emitLog(req.app, "Invalid path (potential traversal attempt)", {
           data: { urlPath },
+          req,
+          res,
         });
 
         res.status(400).send(
@@ -195,7 +201,11 @@ export const files: Controller<string | FilesParams> = (params) => {
     if (filePath === null) {
       if (fallthrough) next();
       else {
-        emitLog(req.app, "Unknown path", { data: { urlPath } });
+        emitLog(req.app, "Unknown path", {
+          data: { urlPath },
+          req,
+          res,
+        });
 
         res.status(404).send(
           await req.app.renderStatus?.(req, res, {
@@ -207,6 +217,14 @@ export const files: Controller<string | FilesParams> = (params) => {
 
       return;
     }
+
+    emitLog(req.app, "File path resolved", {
+      data: {
+        filePath,
+      },
+      req,
+      res,
+    });
 
     if (!p.transform?.length) {
       res.sendFile(filePath);
