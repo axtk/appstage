@@ -181,16 +181,6 @@ export const files: Controller<string | FilesParams> = (params) => {
         }
       }
 
-      // /x.en/index.html /x.en/index.htm /x/index.html /x/index.htm /x.ru/index.html /x.ru/index.htm
-      for (let i = 0; i < suffixes.length && filePath === null; i++) {
-        for (let j = 0; j < exts.length && filePath === null; j++)
-          filePath = await resolve(
-            base,
-            `${urlPath}${suffixes[i]}`,
-            `index.${exts[j]}`,
-          );
-      }
-
       // /x/index.en.html /x/index.en.htm /x/index.html /x/index.htm /x/index.ru.html /x/index.ru.htm
       for (let i = 0; i < suffixes.length && filePath === null; i++) {
         for (let j = 0; j < exts.length && filePath === null; j++)
