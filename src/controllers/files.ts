@@ -156,10 +156,6 @@ export const files: Controller<string | FilesParams> = (params) => {
       let base = bases[k];
 
       if (!urlPath.endsWith("/")) {
-        // /x.en /x /x.ru
-        for (let i = 0; i < suffixes.length && filePath === null; i++)
-          filePath = await resolve(base, `${urlPath}${suffixes[i]}`);
-
         if (filePath === null && urlExt) {
           let urlPathBase = urlPath.slice(0, -urlExt.length);
 
@@ -170,6 +166,10 @@ export const files: Controller<string | FilesParams> = (params) => {
               `${urlPathBase}${suffixes[i]}${urlExt}`,
             );
         }
+
+        // /x.en /x /x.ru
+        for (let i = 0; i < suffixes.length && filePath === null; i++)
+          filePath = await resolve(base, `${urlPath}${suffixes[i]}`);
 
         // /x.en.html /x.en.htm /x.html /x.htm /x.ru.html /x.ru.htm
         for (let i = 0; i < suffixes.length && filePath === null; i++) {
