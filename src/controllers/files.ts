@@ -99,9 +99,10 @@ export const files: Controller<string | FilesParams> = (params) => {
     let urlPath =
       typeof p.path === "string" ? p.path : (p.path ?? defaultPath)(req);
 
-    let defaultLanguage = typeof p.defaultLanguage === "function"
-      ? p.defaultLanguage(req)
-      : p.defaultLanguage ?? "en";
+    let defaultLanguage =
+      typeof p.defaultLanguage === "function"
+        ? p.defaultLanguage(req)
+        : (p.defaultLanguage ?? "en");
 
     if (!matches(urlPath, p.matches)) {
       if (fallthrough) next();
@@ -173,7 +174,10 @@ export const files: Controller<string | FilesParams> = (params) => {
         // /x.en.html /x.en.htm /x.html /x.htm /x.ru.html /x.ru.htm
         for (let i = 0; i < suffixes.length && filePath === null; i++) {
           for (let j = 0; j < exts.length && filePath === null; j++)
-            filePath = await resolve(base, `${urlPath}${suffixes[i]}.${exts[j]}`);
+            filePath = await resolve(
+              base,
+              `${urlPath}${suffixes[i]}.${exts[j]}`,
+            );
         }
       }
 
