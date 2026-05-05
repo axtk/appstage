@@ -82,7 +82,7 @@ export type FilesParams = {
 };
 
 const defaultExtensions = ["html", "htm"];
-const defaultPath = (req: Request) => req.path;
+const defaultPath = (req: Request) => decodeURIComponent(req.path);
 
 /**
  * Serves files from the specified directory path or paths in a locale-aware
