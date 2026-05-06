@@ -15,4 +15,8 @@ export type BuildParams = {
    * @default "src/server/entries.ts"
    */
   entriesPath?: string | null;
+  /**
+   * @default true
+   */
+  useEnvFiles?: boolean;
 };

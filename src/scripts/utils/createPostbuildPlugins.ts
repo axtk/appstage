@@ -4,7 +4,7 @@ import type { BuildParams } from "../types/BuildParams.ts";
 
 export function createPostbuildPlugins(
   { serverDir, clientDir }: BuildParams,
-  onServerRebuild: () => void,
+  onServerRebuild: (() => void) | (() => Promise<void>),
 ) {
   let serverPlugins: Plugin[] = [
     {

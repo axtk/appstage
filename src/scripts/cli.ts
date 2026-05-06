@@ -27,6 +27,7 @@ export async function cli(input: string[] = []) {
     watchServer: args.hasKey("--watch-server"),
     watchClient: args.hasKey("--watch-client"),
     start: args.hasKey("--start"),
+    useEnvFiles: !args.isExplicitlyOff("--use-env-files"),
   };
 
   if (args.hasKey("--no-auto-entries")) params.entriesPath = null;
