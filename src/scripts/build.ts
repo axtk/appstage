@@ -38,13 +38,12 @@ export async function build(params: BuildParams) {
 
   let serverProcess: ChildProcess | null = null;
   let inited = false;
+
   let nodeArgs = [`${params.serverDir}/server/index.js`];
+  let envFiles: string[] | null = null;
 
   if (params.useEnvFiles !== false) {
-    let envFiles = await getEnvFiles();
-
-    for (let envFile of envFiles) log(`Using ${envFile}`);
-
+    envFiles = await getEnvFiles();
     nodeArgs.unshift(...envFiles.map((file) => `--env-file=${file}`));
   }
 
@@ -56,6 +55,11 @@ export async function build(params: BuildParams) {
 
     if (!inited) {
       log(`Build completed +${formatDuration(Date.now() - startTime)}`);
+
+      if (envFiles) {
+        for (let envFile of envFiles) log(`Using ${envFile}`);
+      }
+
       inited = true;
     }
 
