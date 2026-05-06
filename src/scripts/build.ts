@@ -1,11 +1,11 @@
 import { type ChildProcess, spawn } from "node:child_process";
+import { access } from "node:fs/promises";
 import { formatDuration } from "dateshape";
 import type { BuildParams } from "./types/BuildParams.ts";
 import { buildClient } from "./utils/buildClient.ts";
 import { buildServer } from "./utils/buildServer.ts";
 import { buildServerCSS } from "./utils/buildServerCSS.ts";
 import { createPostbuildPlugins } from "./utils/createPostbuildPlugins.ts";
-import { access } from "node:fs/promises";
 
 const envFileNames: Record<string, string[]> = {
   development: [".env.development", ".env.dev"],
@@ -17,13 +17,12 @@ async function getEnvFiles() {
   let names = [".env"];
 
   if (NODE_ENV !== undefined && NODE_ENV in envFileNames)
-    names.push(...envFileNames[NODE_ENV])
+    names.push(...envFileNames[NODE_ENV]);
 
   for (let i = names.length - 1; i >= 0; i--) {
     try {
       await access(names[i]);
-    }
-    catch {
+    } catch {
       names.splice(i, 1);
     }
   }
@@ -43,7 +42,7 @@ export async function build(params: BuildParams) {
 
   if (params.useEnvFiles !== false) {
     let envFiles = await getEnvFiles();
-  
+
     for (let envFile of envFiles) log(`Using ${envFile}`);
 
     nodeArgs.push(...envFiles.map((file) => `--env-file=${file}`));
