@@ -45,7 +45,7 @@ export async function build(params: BuildParams) {
 
     for (let envFile of envFiles) log(`Using ${envFile}`);
 
-    nodeArgs.push(...envFiles.map((file) => `--env-file=${file}`));
+    nodeArgs.unshift(...envFiles.map((file) => `--env-file=${file}`));
   }
 
   function handleServerRebuild() {
