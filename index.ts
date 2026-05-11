@@ -24,6 +24,7 @@ export * from "./src/types/TransformContent.ts";
 export * from "./src/utils/createApp.ts";
 export * from "./src/utils/cspNonce.ts";
 export * from "./src/utils/emitLog.ts";
+export * from "./src/utils/getAppURL.ts";
 export * from "./src/utils/getStatusMessage.ts";
 export * from "./src/utils/injectNonce.ts";
 export * from "./src/utils/renderStatus.ts";

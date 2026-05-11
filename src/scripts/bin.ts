@@ -23,12 +23,8 @@ async function run() {
 
   if (nodeEnv !== undefined) process.env.NODE_ENV = nodeEnv;
 
-  if (args.length !== 0 && !isKey(args[0])) {
-    let [hostname, port] = args[0].split(":");
-
-    if (hostname) process.env.APP_HOST = hostname;
-    if (port) process.env.APP_PORT = port;
-
+  if (args.length !== 0 && args[0] && !isKey(args[0])) {
+    process.env.APP_URL = args[0];
     args.shift();
   }
 

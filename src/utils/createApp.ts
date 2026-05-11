@@ -6,22 +6,20 @@ import { requestEvents } from "../middleware/requestEvents.ts";
 import type { LogEventPayload } from "../types/LogEventPayload.ts";
 import { emitLog } from "./emitLog.ts";
 import { renderStatus } from "./renderStatus.ts";
+import { getAppURL } from "./getAppURL.ts";
 
 export function createApp(callback?: () => void | Promise<void>) {
   let app = express();
 
   if (!app.events) app.events = new EventEmitter();
 
-  let host = process.env.APP_HOST || "localhost";
-  let port = Number(process.env.APP_PORT) || 3000;
-
   let listen = () => {
-    app.listen(port, host, () => {
-      let location = `http://${host}:${port}/`;
-      let env = `NODE_ENV=${process.env.NODE_ENV}`;
+    let { href, protocol, hostname, port } = getAppURL();
 
-      emitLog(app, `Server running at ${location} (${env})`);
-    });
+    if (protocol === "http:")
+      app.listen(port, hostname, () => {
+        emitLog(app, `Server running at ${href} (NODE_ENV=${process.env.NODE_ENV})`);
+      });
   };
 
   if (process.env.NODE_ENV === "development")
