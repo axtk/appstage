@@ -3,11 +3,11 @@ const defaultPorts: Record<string, number> = {
   "https:": 443,
 };
 
-export function getAppURL() {
+export function getServerURL() {
   let {
-    APP_URL: href,
-    APP_HOSTNAME: hostname = "localhost",
-    APP_PORT: port = "3000",
+    SERVER_URL: href,
+    SERVER_HOSTNAME: hostname = "localhost",
+    SERVER_PORT: port = "3000",
   } = process.env;
 
   let protocol = "http:";

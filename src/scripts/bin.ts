@@ -24,7 +24,7 @@ async function run() {
   if (nodeEnv !== undefined) process.env.NODE_ENV = nodeEnv;
 
   if (args.length !== 0 && args[0] && !isKey(args[0])) {
-    process.env.APP_URL = args[0];
+    process.env.SERVER_URL = args[0];
     args.shift();
   }
 

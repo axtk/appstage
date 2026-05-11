@@ -6,7 +6,7 @@ import { requestEvents } from "../middleware/requestEvents.ts";
 import type { LogEventPayload } from "../types/LogEventPayload.ts";
 import { emitLog } from "./emitLog.ts";
 import { renderStatus } from "./renderStatus.ts";
-import { getAppURL } from "./getAppURL.ts";
+import { getServerURL } from "./getServerURL.ts";
 
 export function createApp(callback?: () => void | Promise<void>) {
   let app = express();
@@ -14,7 +14,7 @@ export function createApp(callback?: () => void | Promise<void>) {
   if (!app.events) app.events = new EventEmitter();
 
   let listen = () => {
-    let { href, protocol, hostname, port } = getAppURL();
+    let { href, protocol, hostname, port } = getServerURL();
 
     if (protocol === "http:")
       app.listen(port, hostname, () => {
