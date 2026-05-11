@@ -17,12 +17,11 @@ export function getServerURL() {
     else if (!href.includes("://")) href = `${protocol}//${href}`;
     else protocol = href.slice(0, href.indexOf("://") + 1);
 
-    let matches = href.match(/^\w+:\/\/([^\/:]+)(:(\d+))?(\/|$)/);
+    let matches = href.match(/^\w+:\/\/([^/:]+)(:(\d+))?(\/|$)/);
 
     if (matches?.[1]) hostname = matches[1];
     if (matches?.[3]) port = matches[3];
-  }
-  else href = `${protocol}//${hostname}:${port}`;
+  } else href = `${protocol}//${hostname}:${port}`;
 
   let parsedPort = Number(port);
   let origin = `${protocol}//${hostname}`;

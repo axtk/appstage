@@ -5,8 +5,8 @@ import { init } from "../middleware/init.ts";
 import { requestEvents } from "../middleware/requestEvents.ts";
 import type { LogEventPayload } from "../types/LogEventPayload.ts";
 import { emitLog } from "./emitLog.ts";
-import { renderStatus } from "./renderStatus.ts";
 import { getServerURL } from "./getServerURL.ts";
+import { renderStatus } from "./renderStatus.ts";
 
 export function createApp(callback?: () => void | Promise<void>) {
   let app = express();
@@ -18,7 +18,10 @@ export function createApp(callback?: () => void | Promise<void>) {
 
     if (protocol === "http:")
       app.listen(port, hostname, () => {
-        emitLog(app, `Server running at ${href} (NODE_ENV=${process.env.NODE_ENV})`);
+        emitLog(
+          app,
+          `Server running at ${href} (NODE_ENV=${process.env.NODE_ENV})`,
+        );
       });
   };
 
